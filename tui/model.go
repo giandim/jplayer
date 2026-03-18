@@ -58,7 +58,7 @@ type app struct {
 func InitialModel() app {
 	userHomeDir, err := os.UserHomeDir()
 	if err != nil {
-		fmt.Errorf("Cannot access user dir", err)
+		fmt.Printf("Cannot access user dir: %v", err)
 	}
 
 	p := make(map[Position]panel)

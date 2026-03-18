@@ -20,16 +20,22 @@ var audioExtensions = map[string]bool{
 	".m4a":  true,
 }
 
+// GoTo navigate to the next or previous directory and returns
+// the new directory stack
 func GoTo(nextDir string, dirStack []string) []string {
 	if nextDir == ".." {
 		if len(dirStack) > 1 {
 			return dirStack[:len(dirStack)-1]
 		}
+
+		return dirStack
 	}
 
 	return append(dirStack, nextDir)
 }
 
+// GetDirectoryContents returns all subdirectories and audio tracks
+// found at the path represented by dirStack.
 func GetDirectoryContents(dirStack []string) (DirectoryContents, error) {
 	var directoryNames []string
 	var tracks []model.Track
@@ -48,7 +54,7 @@ func GetDirectoryContents(dirStack []string) (DirectoryContents, error) {
 		if audioExtensions[filepath.Ext(file.Name())] {
 			tracks = append(tracks, model.Track{
 				Title: file.Name(),
-				Path:  path + file.Name(),
+				Path:  filepath.Join(path, file.Name()),
 			})
 		}
 	}

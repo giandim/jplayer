@@ -89,6 +89,14 @@ func TestGetDirectoryContents(t *testing.T) {
 			expectedDirs:  []string{"jazz", "rock"},
 		},
 		{
+			name: "with hidden folders",
+			setup: func(tmpDir string) {
+				os.Mkdir(filepath.Join(tmpDir, "jazz"), 0755)
+				os.Mkdir(filepath.Join(tmpDir, ".hidden-rock"), 0755)
+			},
+			expectedFiles: nil,
+			expectedDirs:  []string{"jazz"},
+		}, {
 			name: "only audio files",
 			setup: func(tmpDir string) {
 				os.WriteFile(filepath.Join(tmpDir, "track.mp3"), []byte{}, 0644)
@@ -156,3 +164,4 @@ func TestGetDirectoryContents(t *testing.T) {
 		})
 	}
 }
+

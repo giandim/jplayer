@@ -4,6 +4,7 @@ import (
 	"jplayer/model"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type DirectoryContents struct {
@@ -47,7 +48,8 @@ func GetDirectoryContents(dirStack []string) (DirectoryContents, error) {
 	}
 
 	for _, file := range files {
-		if file.Type().IsDir() {
+		// Check for dirs and hide the hidden ones
+		if file.Type().IsDir() && !strings.HasPrefix(file.Name(), ".") {
 			directoryNames = append(directoryNames, file.Name())
 		}
 

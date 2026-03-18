@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"jplayer/model"
 	"os"
 	"time"
 )
@@ -24,14 +25,6 @@ const (
 )
 
 // MODEL STRUCTS
-type Track struct {
-	title  string
-	path   string
-	album  string
-	artist string
-	lenght time.Duration
-}
-
 type panel struct {
 	panelType PanelType
 	cursor    int
@@ -39,31 +32,41 @@ type panel struct {
 }
 
 type Position struct {
-	x, y int
+	row, col int
 }
 
 // MODEL
-type model struct {
+type app struct {
 	dirStack        []string
-	tracks          []Track
+	tracks          []model.Track
 	nextDirectories []string
-	queue           []Track
-	panels          map[Position]panel
-	activePanel     Position
-	windowWidth     int
-	windowHeight    int
+	queue           []model.Track
+
+	panels       map[Position]panel
+	activePanel  Position
+	windowWidth  int
+	windowHeight int
+
 	playerState     PlaybackState
 	selectedSong    *int
 	currentPlayback time.Duration
+
+	error        error
+	mpvInstalled bool
 }
 
-func InitialModel() model {
+func InitialModel() app {
 	userHomeDir, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Errorf("Cannot access user dir", err)
 	}
 
-	return model{
-		dirStack: []string{userHomeDir},
+	p := make(map[Position]panel)
+	p[Position{row: 1, col: 1}] = panel{cursor: 0}
+
+	return app{
+		dirStack:    []string{userHomeDir},
+		activePanel: Position{row: 1, col: 1},
+		panels:      p,
 	}
 }

@@ -1,7 +1,9 @@
 package tui
 
+import "jplayer/fs"
+
 type dirLoadedMsg struct {
-	tracks []Track
+	fs.DirectoryContents
 }
 
 type mpvEventMsg struct {
@@ -10,6 +12,10 @@ type mpvEventMsg struct {
 
 type mpvCheckedMsg struct {
 	installed bool
+}
+
+type errMsg struct {
+	err error
 }
 
 type tickMsg struct{}

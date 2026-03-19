@@ -31,7 +31,7 @@ type panel struct {
 	visible   bool
 }
 
-type Position struct {
+type position struct {
 	row, col int
 }
 
@@ -42,8 +42,8 @@ type app struct {
 	nextDirectories []string
 	queue           []model.Track
 
-	panels       map[Position]panel
-	activePanel  Position
+	panels       map[position]panel
+	activePanel  position
 	windowWidth  int
 	windowHeight int
 
@@ -61,12 +61,12 @@ func InitialModel() app {
 		fmt.Printf("Cannot access user dir: %v", err)
 	}
 
-	p := make(map[Position]panel)
-	p[Position{row: 1, col: 1}] = panel{cursor: 0}
+	p := make(map[position]panel)
+	p[position{row: 1, col: 1}] = panel{cursor: 0}
 
 	return app{
 		dirStack:    []string{userHomeDir},
-		activePanel: Position{row: 1, col: 1},
+		activePanel: position{row: 1, col: 1},
 		panels:      p,
 	}
 }

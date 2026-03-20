@@ -24,7 +24,7 @@ func (a app) View() tea.View {
 	s += renderHeader(a.dirStack, a.windowWidth) + "\n"
 
 	for index, dir := range a.nextDirectories {
-		if a.panels[a.activePanel].cursor == index {
+		if a.getActivePanel().panelType == FoldersPanel && a.panels[a.activePanel].cursor == index {
 			s += fmt.Sprintf(">  %v \n", dir)
 		} else {
 			s += fmt.Sprintf("  %v \n", dir)
@@ -33,8 +33,12 @@ func (a app) View() tea.View {
 
 	s += "\n\n\n"
 
-	for _, track := range a.tracks {
-		s += track.Title + "\n"
+	for index, track := range a.tracks {
+		if a.getActivePanel().panelType == TracksPanel && a.panels[a.activePanel].cursor == index {
+			s += fmt.Sprintf(">  %v \n", track.Title)
+		} else {
+			s += fmt.Sprintf("  %v \n", track.Title)
+		}
 	}
 
 	v := tea.NewView(s)
@@ -50,34 +54,37 @@ func (a app) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return a, tea.Quit
+
 		case "j", "down":
-			p := a.getActivePanel()
-			if p.cursor < len(a.nextDirectories)-1 {
-				p.cursor++
-				a.panels[a.activePanel] = p
-			}
+			a = a.moveCursorDown()
+			return a, nil
+		case "k", "up":
+			a = a.moveCursorUp()
 			return a, nil
 
-		case "k", "up":
-			p := a.getActivePanel()
-			if p.cursor > 0 {
-				p.cursor--
-				a.panels[a.activePanel] = p
-			}
+		case "ctrl+left", "ctrl+h":
+			a = a.changePanel(Left)
+			return a, nil
+		case "ctrl+right", "ctrl+l":
+			a = a.changePanel(Right)
+			return a, nil
+		case "ctrl+up", "ctrl+k":
+			a = a.changePanel(Up)
+			return a, nil
+		case "ctrl+down", "ctrl+j":
+			a = a.changePanel(Down)
 			return a, nil
 
 		case "enter":
-			p := a.getActivePanel()
-			nextDir := a.nextDirectories[p.cursor]
+			nextDir := a.nextDirectories[a.getActivePanel().cursor]
 			a.dirStack = fs.GoTo(nextDir, a.dirStack)
-			a.updateCursor(0)
+			a = a.updateCursor(0)
 			return a, loadDirCmd(a.dirStack)
 
 		case "backspace":
 			a.dirStack = fs.GoTo("..", a.dirStack)
-			a.updateCursor(0)
+			a = a.updateCursor(0)
 			return a, loadDirCmd(a.dirStack)
-
 		}
 
 	case tea.WindowSizeMsg:

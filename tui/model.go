@@ -62,7 +62,8 @@ func InitialModel() app {
 	}
 
 	p := make(map[position]panel)
-	p[position{row: 1, col: 1}] = panel{cursor: 0}
+	p[position{row: 1, col: 1}] = panel{cursor: 0, panelType: FoldersPanel}
+	p[position{row: 2, col: 1}] = panel{cursor: 0, panelType: TracksPanel}
 
 	return app{
 		dirStack:    []string{userHomeDir},
